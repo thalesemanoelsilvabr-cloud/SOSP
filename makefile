@@ -1,12 +1,18 @@
-# Makefile para SOSP
+# Makefile Mestre para SOSP
+CC=gcc
+NASM=nasm
+JAVAC=javac
+
 all: build_kernel build_apps
 
 build_kernel:
-	nasm -f bin boot/boot.asm -o bin/boot.bin
-	gcc -c core/Kernel.c -o bin/kernel.o -ffreestanding
+	@echo "Compilando Kernel..."
+	$(NASM) -f bin boot/boot.asm -o bin/boot.bin
+	$(CC) -c core/Kernel.c -o bin/kernel.o -ffreestanding
 
 build_apps:
-	javac apps/Apploader.java -d bin/
+	@echo "Preparando Apps..."
+	$(JAVAC) apps/Apploader.java -d bin/
 
 clean:
 	rm -rf bin/*
