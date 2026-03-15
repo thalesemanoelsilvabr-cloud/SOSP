@@ -1,50 +1,38 @@
 import subprocess
 import os
 
-class SOSP_Interface:
+class SOSP_Manager:
     def __init__(self):
-        self.log_prefix = "🌟 [SOSP-SYSTEM]"
+        self.sources_list = "/etc/apt/sources.list.d/aura.list"
+        self.log_file = "/var/log/aura_system.log"
 
-    def log(self, mensagem):
-        print(f"{self.log_prefix} {mensagem}")
+    # --- AUM: Gestão de Sistema (Base e HTTP) ---
+    def configurar_repositorios(self, url):
+        """Adiciona repositórios externos via HTTP para o AUM."""
+        print(f"🌐 AUM: Configurando repositório {url}...")
+        with open(self.sources_list, "a") as f:
+            f.write(f"deb {url} main\n")
+        subprocess.run(['sudo', 'apt', 'update'])
 
-    def conectar_wifi(self, ssid, senha):
-        self.log(f"A tentar conectar à rede: {ssid}...")
-        try:
-            # Uso do nmcli para gestão de rede profissional
-            subprocess.run(['nmcli', 'dev', 'wifi', 'connect', ssid, 'password', senha], check=True)
-            self.log("✅ Conectado com sucesso!")
-        except subprocess.CalledProcessError:
-            self.log("❌ Erro: Não foi possível conectar. Verifique a password.")
+    def atualizar_sistema(self):
+        """Upgrade do núcleo e base do sistema."""
+        print("🌟 AUM: Atualizando Kernel e Sistema Base...")
+        subprocess.run(['sudo', 'apt', 'dist-upgrade', '-y'])
 
-    def gerenciar_impressora(self):
-        self.log("🖨️ A configurar impressora via protocolo IPP...")
-        # Configuração automática do servidor CUPS
-        subprocess.run(['lpadmin', '-p', 'SOSP_Printer', '-E', '-v', 'ipp://localhost:631/printers/SOSP'], check=True)
-        self.log("✅ Impressora pronta a imprimir.")
+    # --- APM: Gestão de Apps (Alien/Wine/Deb) ---
+    def instalar_app(self, nome_pacote, tipo='deb'):
+        """Instalação de apps via APM."""
+        if tipo == 'wine':
+            print(f"🍷 APM: Instalando {nome_pacote} via Wine...")
+            subprocess.run(['wine', nome_pacote])
+        elif tipo == 'alien':
+            print(f"🔄 APM: Convertendo pacote via Alien...")
+            subprocess.run(['sudo', 'alien', '-i', nome_pacote])
+        else:
+            print(f"📦 APM: Instalando {nome_pacote} nativamente...")
+            subprocess.run(['sudo', 'apt', 'install', '-y', nome_pacote])
 
-    def instalar_pacote(self, caminho_arquivo):
-        """Instalador universal: .deb, .rpm (via alien)"""
-        extensao = os.path.splitext(caminho_arquivo)[1].lower()
-        self.log(f"📦 A processar pacote: {caminho_arquivo}")
-        
-        try:
-            if extensao == ".deb":
-                subprocess.run(['sudo', 'dpkg', '-i', caminho_arquivo], check=True)
-            elif extensao == ".rpm":
-                self.log("🔄 Conversão de .rpm para .deb em curso...")
-                subprocess.run(['sudo', 'alien', '-i', caminho_arquivo], check=True)
-            else:
-                self.log("❌ Formato não suportado nativamente.")
-                return
-            
-            # Corrige dependências automaticamente após a instalação
-            subprocess.run(['sudo', 'apt', '-f', 'install', '-y'], check=True)
-            self.log("🚀 Instalação concluída com sucesso!")
-        except Exception as e:
-            self.log(f"❌ Erro crítico: {e}")
-
-    def status_sistema(self):
-        """Retorna o estado do processador e memória (Kids-Friendly)"""
-        memoria = os.popen("free -m").readlines()[1].split()[2]
-        self.log(f"🧠 Memória usada: {memoria}MB")
+# Exemplo de uso pelo Arquiteto:
+# manager = SOSP_Manager()
+# manager.configurar_repositorios("http://repo.aura-os.org/debian")
+# manager.instalar_app("meu_programa.rpm", tipo='alien')
