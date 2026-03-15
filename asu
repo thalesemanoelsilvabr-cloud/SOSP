@@ -1,0 +1,11 @@
+#!/bin/bash
+# Localização: /usr/bin/asu
+
+if [ "$1" == "--" ]; then
+    # O comando -- passa o resto para o SOSP.py (AUM/APM)
+    shift
+    python3 /usr/bin/sosp.py "$@"
+else
+    # Comportamento padrão de superusuário
+    sudo "$@"
+fi
