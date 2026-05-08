@@ -16,7 +16,7 @@ namespace Aura.APM {
                     // Busca a lista de pacotes (Packages.gz)
                     var response = await client.GetAsync(DebianRepo + "binary-amd64/Packages");
                     if (response.IsSuccessStatusCode) {
-                        Console.WriteLine("[APM] Sincronização com Debian concluída via HTTP.");
+                        Console.WriteLine("[APM] Funcionando.");
                     }
                 }
             } catch (Exception) {
@@ -26,9 +26,9 @@ namespace Aura.APM {
         }
 
         public void InstallDeb(string packageName) {
-            Console.WriteLine($"[APM] Baixando '{packageName}' dos repositórios Debian...");
+            Console.WriteLine($"[APM] Baixando '{packageName}' dos repositórios Aura...");
             // Lógica para descompactar .deb e converter para o padrão QuanticS
-            Console.WriteLine("[APM] Convertendo binário Linux para compatibilidade AuraOS...");
+            Console.WriteLine("[APM] Convertendo binário HZP para compatibilidade AuraOS...");
         }
     }
 }
